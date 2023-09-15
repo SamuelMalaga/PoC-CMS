@@ -1,0 +1,85 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites('root')/lists('473f4f64-5200-4133-bf98-dcf975654344')/items",
+  "value": [
+      {
+          "@odata.etag": "\"84ca7a3c-6ee3-4ee3-981b-10538c36d5c4,1\"",
+          "createdDateTime": "2023-09-15T19:21:05Z",
+          "eTag": "\"84ca7a3c-6ee3-4ee3-981b-10538c36d5c4,1\"",
+          "id": "1",
+          "lastModifiedDateTime": "2023-09-15T19:21:05Z",
+          "webUrl": "https://elogroup.sharepoint.com/Lists/PoCPowerUiDocs/1_.000",
+          "createdBy": {
+              "user": {
+                  "email": "samuel.malaga@elogroup.com.br",
+                  "id": "043dd627-8211-468b-8791-b10e576dcb70",
+                  "displayName": "Samuel Malaga"
+              }
+          },
+          "lastModifiedBy": {
+              "user": {
+                  "email": "samuel.malaga@elogroup.com.br",
+                  "id": "043dd627-8211-468b-8791-b10e576dcb70",
+                  "displayName": "Samuel Malaga"
+              }
+          },
+          "parentReference": {
+              "id": "0c3f227d-296f-4f79-8a5c-d682073c325f",
+              "siteId": "elogroup.sharepoint.com,321391c3-39cd-44c2-b588-768e3a49a85b,acb75b6d-2bda-49ea-98d7-1efdb7ce77ab"
+          },
+          "contentType": {
+              "id": "0x0100ECBF5F95E9EDA2418486A44A259BF14B00E1738AF0F9FF6447BA5F1C1DCFD93DB5",
+              "name": "Item"
+          },
+          "fields@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites('root')/lists('473f4f64-5200-4133-bf98-dcf975654344')/items('1')/fields/$entity",
+          "fields": {
+              "@odata.etag": "\"84ca7a3c-6ee3-4ee3-981b-10538c36d5c4,1\"",
+              "Texto": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse volutpat elit et pellentesque feugiat. Morbi malesuada odio at dictum ullamcorper. Integer odio elit, viverra eget justo nec, tempor posuere ligula. Vestibulum nisl lorem, euismod vulputate vehicula non, imperdiet vitae dolor. Fusce hendrerit eleifend felis, quis condimentum felis commodo lobortis. Donec lacinia nisl ut turpis luctus tincidunt. Vestibulum interdum lobortis ante at molestie.",
+              "linkInfo": {
+                  "Description": "https://elogroup.sharepoint.com/sites/KnowledgeHUB",
+                  "Url": "https://elogroup.sharepoint.com/sites/KnowledgeHUB"
+              },
+              "imageInfo": "{\"type\":\"thumbnail\",\"fileName\":\"Exponential-growth-of-the-computing-power-Source-Time-Magazine.png\",\"nativeFile\":{},\"fieldName\":\"imageInfo\",\"serverUrl\":\"https://elogroup.sharepoint.com\",\"fieldId\":\"2d49f27b-1643-4049-bbe9-2955e126c5c9\",\"serverRelativeUrl\":\"/SiteAssets/Lists/473f4f64-5200-4133-bf98-dcf975654344/Exponential-growth-of-the-computing-power-Source-Time-Magazine.png\",\"id\":\"9a190f36-0ad5-4b13-a12c-9bfa860980c4\"}"
+          }
+      },
+      {
+          "@odata.etag": "\"25600bdc-c0fb-460c-b2d5-1357908bfb95,1\"",
+          "createdDateTime": "2023-09-15T20:31:50Z",
+          "eTag": "\"25600bdc-c0fb-460c-b2d5-1357908bfb95,1\"",
+          "id": "2",
+          "lastModifiedDateTime": "2023-09-15T20:31:50Z",
+          "webUrl": "https://elogroup.sharepoint.com/Lists/PoCPowerUiDocs/2_.000",
+          "createdBy": {
+              "user": {
+                  "email": "samuel.malaga@elogroup.com.br",
+                  "id": "043dd627-8211-468b-8791-b10e576dcb70",
+                  "displayName": "Samuel Malaga"
+              }
+          },
+          "lastModifiedBy": {
+              "user": {
+                  "email": "samuel.malaga@elogroup.com.br",
+                  "id": "043dd627-8211-468b-8791-b10e576dcb70",
+                  "displayName": "Samuel Malaga"
+              }
+          },
+          "parentReference": {
+              "id": "0c3f227d-296f-4f79-8a5c-d682073c325f",
+              "siteId": "elogroup.sharepoint.com,321391c3-39cd-44c2-b588-768e3a49a85b,acb75b6d-2bda-49ea-98d7-1efdb7ce77ab"
+          },
+          "contentType": {
+              "id": "0x0100ECBF5F95E9EDA2418486A44A259BF14B00E1738AF0F9FF6447BA5F1C1DCFD93DB5",
+              "name": "Item"
+          },
+          "fields@odata.context": "https://graph.microsoft.com/v1.0/$metadata#sites('root')/lists('473f4f64-5200-4133-bf98-dcf975654344')/items('2')/fields/$entity",
+          "fields": {
+              "@odata.etag": "\"25600bdc-c0fb-460c-b2d5-1357908bfb95,1\"",
+              "Texto": "If enabled by your administrator, you can Create a team or communication site (video). from the SharePoint start page as well. If using SharePoint Online, you can also create a news post. Use search to find other sites, files, or people in your organization",
+              "linkInfo": {
+                  "Description": "https://support.microsoft.com/en-us/office/discover-content-with-the-sharepoint-start-page-6b85097a-87e0-4611-a29a-dfd49b1a1220?ui=en-us&rs=en-us&ad=us",
+                  "Url": "https://support.microsoft.com/en-us/office/discover-content-with-the-sharepoint-start-page-6b85097a-87e0-4611-a29a-dfd49b1a1220?ui=en-us&rs=en-us&ad=us"
+              },
+              "imageInfo": "{\"type\":\"thumbnail\",\"fileName\":\"Exponential-growth-of-the-computing-power-Source-Time-Magazine.png\",\"nativeFile\":{},\"fieldName\":\"imageInfo\",\"serverUrl\":\"https://elogroup.sharepoint.com\",\"fieldId\":\"2d49f27b-1643-4049-bbe9-2955e126c5c9\",\"serverRelativeUrl\":\"/SiteAssets/Lists/473f4f64-5200-4133-bf98-dcf975654344/Exponential-growth-of-the-computing-power-Source-Time-Magazine1.png\",\"id\":\"4771e977-f2a4-4971-8f85-0b707686f9e4\"}"
+          }
+      }
+  ]
+}
