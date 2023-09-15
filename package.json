@@ -1,0 +1,9 @@
+{
+  "name": "example-graph-app",
+  "scripts": {
+    "start": "live-server --cors"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
