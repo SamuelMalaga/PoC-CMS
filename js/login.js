@@ -1,6 +1,7 @@
 let rawListContent = null;
 let userAuthenticated = false;
 document.querySelector('#userAuthenticated').innerHTML = userAuthenticated;
+let contentData = new Array();
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
 async function run(){
@@ -42,31 +43,12 @@ async function run(){
 
   rawListContent = jsonContent
   userAuthenticated = true;
+  let loginButtonState = document.querySelector('#loginButton').innerHTML;
+  let logoutButtonState = document.querySelector('#logoutButton').innerHTML;
+  if(userAuthenticated=true){
+    loginButtonState.style.display == "none"
+  }
+
   document.querySelector('#userAuthenticated').innerHTML = userAuthenticated;
 
 }
-
-async function loadSampleData() {
-  try {
-    const response = await fetch('./sampleResponse.json'); // Substitua 'data.json' pelo caminho correto para o seu arquivo JSON local
-    if (!response.ok) {
-      throw new Error('Não foi possível carregar o arquivo JSON.');
-    }
-
-    rawListContent = await response.json();
-    console.log('Dados JSON carregados com sucesso:', rawListContent);
-  } catch (error) {
-    console.error('Erro ao carregar o arquivo JSON:', error);
-  }
-  document.querySelector('#output').innerHTML = JSON.stringify(rawListContent,null,4);
-}
-
-function getData(){
-  document.querySelector('#output').innerHTML = JSON.stringify(rawListContent,null,4);
-}
-
-
-//TODO - Parse the JSON response
-// Get the Json Response data
-// Process Json response data
-// Render Json Response data in page
