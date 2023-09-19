@@ -6,7 +6,7 @@ let topicTableRawContent = null;
 let sectionTableRawContent = null;
 let sectionContent = null;
 let selectedSectionDataId = null;
-
+let topicData = null;
 let contentData = new Array();
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
@@ -50,10 +50,12 @@ async function run(){
   //selectedSectionDataId = 1;
   processSectionData(sectionData);
   const topicDataList = await getTopicData(tokenResponse.accessToken);
-  //filterTopicData(selectedSectionDataId);
+  topicData = topicDataList;
   processTopicData(topicDataList);
+  const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
+  //console.log(topicDataList);
+  processSubtopicData(subTopicDataList);
   getItemData(tokenResponse.accessToken);
-  //getSubTopicData(tokenResponse.accessToken);
 
 
   let jsonContent = await payload.json();
@@ -81,8 +83,8 @@ async function getSubTopicData(acessToken){
       'Authorization':`Bearer ${tokenResponse.accessToken}`
     }
   });
-  //subTopicTableRawContent = await payload.json();
-  console.log('Getsubtopic data',subTopicTableRawContent.value)
+  subTopicTableRawContent = await payload.json();
+  //console.log('Getsubtopic data',subTopicTableRawContent.value)
   return subTopicTableRawContent.value;
   } catch(error){
     console.error('Error retrieving topic data:', error);
@@ -110,18 +112,39 @@ async function getTopicData(acessToken){
 }
 function processTopicData(topicDataList){
 
+  let topicDataToIterate = topicDataList
+
   const sidebarSectionList = document.getElementById('sidebarSectionList');
+  //TODO - Melhorar esse mecanismo
   if(selectedSectionDataId != null){
     sidebarSectionList.innerHTML='';
+    //console.log('dentro do if com selectedId n null');
+    //console.log('topic data sem filtragem',  topicDataToIterate)
+  } else{
+    //console.log('dentro do if com selectedId null');
+    topicDataToIterate = topicDataList.filter((topic)=> topic.fields.sectionLookupId === "1")
+    //console.log('topic data sem filtragem',  topicDataToIterate)
   }
 
-  topicDataList.forEach(topicObj=>{
+  topicDataToIterate.forEach(topicObj=>{
+    //const testTagLi = document.createElement('li')
+    //testTagLi.textContent = "teste"
+    const subTopicRelatedList = document.createElement('ul')
     const sideBarListItem = document.createElement('h4');
     const sidebarLinkText = document.createElement('a');
+    subTopicRelatedList.setAttribute('id', topicObj.id+"-"+topicObj.fields.Title);
+    sideBarListItem.setAttribute('id',topicObj.id)
     sidebarLinkText.textContent= topicObj.fields.Title;
     sidebarLinkText.style.color="rgba(0,0, 0, 1)";
     sidebarLinkText.value=topicObj.fields.Title;
+    sidebarLinkText.onclick= function ( ){
+      selectedSectionDataId = topicObj.id
+      doSomething(topicObj.id);
+      return false;
+    };
+    //subTopicRelatedList.appendChild(testTagLi);
     sideBarListItem.appendChild(sidebarLinkText);
+    sideBarListItem.appendChild(subTopicRelatedList);
     sidebarSectionList.appendChild(sideBarListItem);
   });
 }
@@ -157,6 +180,25 @@ function processSectionData(sectionData){
     };
     headerListItem.appendChild(headerLinkText);
     headerSectionList.appendChild(headerListItem);
+  });
+}
+function processSubtopicData(subTopicData){
+  let subTopicDataToIterate = subTopicData;
+  console.log('teste', topicData)
+  console.log('veio do process',subTopicDataToIterate);
+  subTopicDataToIterate.forEach((subTopicData) => {
+    const relatedTopicData = topicData.find((topic)=> topic.fields.id === subTopicData.fields.topicLookupId);
+    const parentDomId = relatedTopicData.id + "-" + relatedTopicData.fields.Title
+    console.log('related parent obj', parentDomId);
+    let subTopicListItem = document.createElement('li');
+    let subTopicListItemLink = document.createElement('a');
+    subTopicListItemLink.textContent=subTopicData.fields.Title;
+    subTopicListItem.setAttribute('id',subTopicData.fields.Title +"-"+ subTopicData.id)
+    const parentTopic = document.getElementById(parentDomId);
+    subTopicListItem.appendChild(subTopicListItemLink);
+    parentTopic.appendChild(subTopicListItem);
+    console.log('parent ID',subTopicData.fields.topicLookupId);
+
   });
 }
 //test Function
