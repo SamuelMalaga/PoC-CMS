@@ -7,6 +7,7 @@ let sectionTableRawContent = null;
 let sectionContent = null;
 let selectedSectionDataId = null;
 let topicData = null;
+let subTopicDataArray = null;
 let contentData = new Array();
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
@@ -53,9 +54,13 @@ async function run(){
   topicData = topicDataList;
   processTopicData(topicDataList);
   const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
+  subTopicData = subTopicDataList
   //console.log(topicDataList);
   processSubtopicData(subTopicDataList);
-  getItemData(tokenResponse.accessToken);
+  const RawitemData = await(getItemData(tokenResponse.accessToken))
+  itemData = RawitemData;
+  processItemData(itemData);
+
 
 
   let jsonContent = await payload.json();
@@ -66,13 +71,21 @@ async function run(){
 }
 
 async function getItemData(acessToken){
-  let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo)',
+  try{
+    let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo,subTopicLookupId)',
   {
     headers: {
       'Authorization':`Bearer ${tokenResponse.accessToken}`
     }
   });
   itemTableRawContent = await payload.json();
+  //console.log(itemTableRawContent.value)
+  return itemTableRawContent.value
+  } catch{
+    console.error('Error retrieving item data:', error)
+    throw error
+  }
+
   //console.log('GetItem data',itemTableRawContent.value)
 }
 async function getSubTopicData(acessToken){
@@ -118,21 +131,18 @@ function processTopicData(topicDataList){
   //TODO - Melhorar esse mecanismo
   if(selectedSectionDataId != null){
     sidebarSectionList.innerHTML='';
-    //console.log('dentro do if com selectedId n null');
-    //console.log('topic data sem filtragem',  topicDataToIterate)
+
   } else{
-    //console.log('dentro do if com selectedId null');
+
     topicDataToIterate = topicDataList.filter((topic)=> topic.fields.sectionLookupId === "1")
-    //console.log('topic data sem filtragem',  topicDataToIterate)
+
   }
 
   topicDataToIterate.forEach(topicObj=>{
-    //const testTagLi = document.createElement('li')
-    //testTagLi.textContent = "teste"
     const subTopicRelatedList = document.createElement('ul')
     const sideBarListItem = document.createElement('h4');
     const sidebarLinkText = document.createElement('a');
-    subTopicRelatedList.setAttribute('id', topicObj.id+"-"+topicObj.fields.Title);
+    subTopicRelatedList.setAttribute('id',"TOP-"+ topicObj.id);
     sideBarListItem.setAttribute('id',topicObj.id)
     sidebarLinkText.textContent= topicObj.fields.Title;
     sidebarLinkText.style.color="rgba(0,0, 0, 1)";
@@ -175,7 +185,9 @@ function processSectionData(sectionData){
     headerLinkText.value=sectionObj.fields.Title
     headerLinkText.onclick= function ( ){
       selectedSectionDataId = sectionObj.id
-      filterTopicData(sectionObj.id);
+      filterTopicData(selectedSectionDataId);
+      filterSubTopicData(selectedSectionDataId);
+      filterItemData(selectedSectionDataId);
       return false;
     };
     headerListItem.appendChild(headerLinkText);
@@ -184,22 +196,63 @@ function processSectionData(sectionData){
 }
 function processSubtopicData(subTopicData){
   let subTopicDataToIterate = subTopicData;
-  console.log('teste', topicData)
-  console.log('veio do process',subTopicDataToIterate);
   subTopicDataToIterate.forEach((subTopicData) => {
     const relatedTopicData = topicData.find((topic)=> topic.fields.id === subTopicData.fields.topicLookupId);
-    const parentDomId = relatedTopicData.id + "-" + relatedTopicData.fields.Title
-    console.log('related parent obj', parentDomId);
+    const parentDomId = "TOP-"+  relatedTopicData.id
     let subTopicListItem = document.createElement('li');
     let subTopicListItemLink = document.createElement('a');
     subTopicListItemLink.textContent=subTopicData.fields.Title;
-    subTopicListItem.setAttribute('id',subTopicData.fields.Title +"-"+ subTopicData.id)
+    subTopicListItemLink.setAttribute('id',"SUBTOP-"+ subTopicData.id)
     const parentTopic = document.getElementById(parentDomId);
     subTopicListItem.appendChild(subTopicListItemLink);
-    parentTopic.appendChild(subTopicListItem);
-    console.log('parent ID',subTopicData.fields.topicLookupId);
+    //TODO - Melhorar essa lógica de try catch
+    try{
+      parentTopic.appendChild(subTopicListItem);
+    } catch(error){
+
+    }
+    //console.log('parent ID',subTopicData.fields.topicLookupId);
 
   });
+}
+function processItemData(itemData){
+  const itemContentDiv = document.getElementById('itemContentDiv');
+  let SubTopicRelatedItem = subTopicData;
+  let itemDataToIterate = itemData;
+
+  if(selectedSectionDataId != null){
+    console.log(selectedSectionDataId)
+    itemContentDiv.innerHTML='';
+
+  } else{
+    console.log(' vazio');
+    const InitialTopicDataToIterate = topicData.filter((topic)=> topic.fields.sectionLookupId === "1");
+    const InitialSubTopicDataToIterate = subTopicData;
+    const SubTopicRelatedItem = InitialSubTopicDataToIterate.filter(subtopic => {
+      const topicIdReferenciado = subtopic.fields.topicLookupId;
+      return InitialTopicDataToIterate.some(topic => topic.id ===topicIdReferenciado);
+    })
+    const InitialItemData = itemData;
+    itemDataToIterate = InitialItemData.filter(item =>{
+      const itemIdReferenciado = item.fields.subTopicLookupId;
+      return SubTopicRelatedItem.some(subtopic => subtopic.id === itemIdReferenciado)
+    })
+    // const InitialTopicDataIds = InitialTopicDataToIterate.map(topicData => topicData.id );
+    // const filteredTopicData = InitialTopicDataToIterate.filter(InitialTopicData => InitialTopicDataIds.includes(InitialTopicData.fields.topicLookupId))
+    console.log('Items',itemDataToIterate)
+    //console.log(InitialSubTopicDataToIterate)
+  }
+  itemDataToIterate.forEach((itemData)=>{
+    const relatedSubTopicData = SubTopicRelatedItem.find((subTopic)=> subTopic.fields.id === itemData.fields.subTopicLookupId );
+    console.log('related parent subtopic', "SUBTOP-"+ relatedSubTopicData.id)
+    let itemDataDiv = document.createElement('div');
+    itemDataDiv.setAttribute('id', "IT-"+itemData.id);
+    let itemDataText = document.createElement('p');
+    itemDataText.textContent = itemData.fields.Texto;
+    itemDataDiv.appendChild(itemDataText);
+    itemContentDiv.appendChild(itemDataDiv)
+  })
+  //console.log(itemData)
 }
 //test Function
 function doSomething(testText){
@@ -209,6 +262,36 @@ function doSomething(testText){
 function filterTopicData(sectionDataId){
   const filteredTopicData = topicData.filter((topic) => topic.fields.sectionLookupId === sectionDataId)
   processTopicData(filteredTopicData)
+}
+function filterSubTopicData(sectionDataId){
+  let sectionFilteredSubTopicData = new Array();
+  const filteredTopicData = topicData.filter((topic) => topic.fields.sectionLookupId === sectionDataId)
+  filteredTopicData.forEach((topicData) => {
+    filteredSubTopicData = subTopicData.filter((subTopic) => subTopic.fields.topicLookupId === topicData.id)
+    filteredSubTopicData.forEach((filteredSubTopic) => {
+      sectionFilteredSubTopicData.push(filteredSubTopic)
+    });
+  });
+  processSubtopicData(sectionFilteredSubTopicData)
+}
+function filterItemData(sectionDataId){
+  let sectionFilteredSubTopicData = new Array();
+  let sectionFiltereditemData = new Array();
+  const filteredTopicData = topicData.filter((topic) => topic.fields.sectionLookupId === sectionDataId)
+  filteredTopicData.forEach((topicData) => {
+    filteredSubTopicData = subTopicData.filter((subTopic) => subTopic.fields.topicLookupId === topicData.id)
+    //filter the subtopic
+    filteredSubTopicData.forEach((filteredSubTopic) => {
+      sectionFilteredSubTopicData.push(filteredSubTopic)
+    });
+  });
+  sectionFilteredSubTopicData.forEach((filteredSubTopicData)=>{
+    filteredItemData = itemData.filter((item)=> item.fields.subTopicLookupId === filteredSubTopicData.id)
+    filteredItemData.forEach((filteredItem)=>{
+      sectionFiltereditemData.push(filteredItem)
+    })
+  })
+  processItemData(sectionFiltereditemData);
 }
 
 
