@@ -19,15 +19,63 @@
       </ul>
     </nav>
   </div>
-  <div id="mySidenav" class="sidenav">
-    <!-- <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> -->
-    <a href="#">About</a>
-    <a href="#">Services</a>
-    <a href="#">Clients</a>
-    <a href="#">Contact</a>
-  </div>
-  <div id="main">
+  <div class="bodyContent">
+    <div class="sidenav">
+      <!-- Cada um desses vai ser um topic -->
+      <a class="topicItem" href="#about">About</a>
+      <!-- Cada um desses vai ser um topic -->
+      <a class="topicItem" href="#services">Services</a>
+      <!-- Cada um desses vai ser um topic -->
+      <a class="topicItem" href="#clients">Clients</a>
+      <!-- Cada um desses vai ser um topic -->
 
+      <ul class="topicAndSubTopicGroup">
+        <a class="topicItem" href="#contact">Criando um ambiente</a>
+        <li class="subTopicItem">teste</li>
+        <li class="subTopicItem">teste</li>
+      </ul>
+      <!-- Cada um desses vai ser um topic -->
+      <button class="dropdown-btn">Dropdown
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="subTopicContainer">
+        <!-- Cada um desses vai ser um subtopic -->
+        <a class="subTopicLink" href="#">Link 1</a>
+        <!-- Cada um desses vai ser um subtopic -->
+        <a class="subTopicLink" href="#">Link 2</a>
+        <!-- Cada um desses vai ser um subtopic -->
+        <a class="subTopicLink" href="#">Link 3</a>
+      </div>
+    </div>
+    <div class="main">
+      <div class="itemDisplayContainer">
+        <div class="itemcontainerHeader">
+          <p class="itemTitle">Item Title</p>
+        </div>
+        <div class="itemContentBody">
+          <p class="itemText">The some() method of Array instances tests whether at least one element in the array passes the test implemented by the provided function. It returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. It doesn't modify the array.The some() method of Array instances tests whether at least one element in the array passes the test implemented by the provided function. It returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. It doesn't modify the array.The some() method of Array instances tests whether at least one element in the array passes the test implemented by the provided function. It returns true if, in the array, it finds an element for which the provided function returns true; otherwise it returns false. It doesn't modify the array.</p>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    /* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+    var dropdown = document.getElementsByClassName("dropdown-btn");
+    var i;
+
+    for (i = 0; i < dropdown.length; i++) {
+      dropdown[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var dropdownContent = this.nextElementSibling;
+        if (dropdownContent.style.display === "flex") {
+          dropdownContent.style.display = "none";
+        } else {
+          dropdownContent.style.display = "flex";
+          dropdownContent.style.flexDirection = "column";
+        }
+      });
+    }
+    </script>
 </body>
 </html>

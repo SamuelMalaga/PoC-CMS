@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- <link href="https://unpkg.com/bootstrap@5/dist/css/bootstrap.css" rel="stylesheet" crossorigin>
         <link href="https://unpkg.com/font-awesome@4.7/css/font-awesome.css" rel="stylesheet" crossorigin> -->
-        <link href="css/templateStyles.css" rel="stylesheet">
+        <!-- <link href="css/templateStyles.css" rel="stylesheet"> -->
+        <link href="css/powerUiStyles.css" rel="stylesheet">
         <script src="https://www.unpkg.com/@azure/msal-browser@2.20.0/lib/msal-browser.min.js" crossorigin></script>
         <script type="text/javascript" src="/js/index.js"></script>
         <script src="/js/uikit.js"></script>
@@ -15,14 +16,14 @@
     </head>
     <body>
         <!-- HeaderNavigation Menu -->
-        <header>
+        <!-- <header>
             <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
                 <nav class="uk-navbar-container">
                   <div class="uk-container">
                     <div data-uk-navbar>
                       <div class="uk-navbar-left">
                         <a class="uk-navbar-item uk-logo uk-visible@m" href="index.html">EloGroup | PowerUi</a>
-                        <!-- É aqui que o link de todas as seções são renderizados -->
+                         É aqui que o link de todas as seções são renderizados
                         <ul class="uk-navbar-nav uk-visible@m" id="headerSectionList">
                           <li >
                             <a href="#" onclick="run()" style="color:rgba(255,255, 255, 1) ">Acessar a Documentação</a>
@@ -34,28 +35,28 @@
                 </nav>
             </div>
 
-        </header>
-
-        <!-- Sidebar Nav -->
-        <div id="mainContainer">
-            <div id="sidebarNav">
-                <ul class="uk-nav uk-nav-default doc-nav" id="sidebarSectionList">
-
-                </ul>
-            </div>
-            <div id="pageContent">
-                <div id="initialMessage">
-                <h1 class="uk-heading-medium uk-text-center uk-margin-remove-top">PowerUi Docs</h1>
-                <p class="uk-text-lead uk-text-center">Faça o Log in com sua conta @elogroup para acessar a documentação do powerUI</p>
-                </div>
-                <div id="itemContentDiv">
-                <div>
-                  <p>Esse é um item da div</p>
-                </div>
-                </div>
-            </div>
-
+        </header> -->
+        <div class="header">
+          <nav>
+            <p class="pageTitle">EloGroup | PowerUi</p>
+            <ul class="nav-section-links" id="headerSectionList">
+              <li class="loginBtn" onclick="run()">Log In</li>
+            </ul>
+          </nav>
         </div>
+        <div class="bodyContent">
+            <!-- New SideNav -->
+          <div class="sidenav" id="sideBarTopicList">
+          </div>
+          <!-- Sidebar Nav -->
+          <div  class="main" id="main">
+              <!-- <div id="pageContent" class="">
+
+              </div> -->
+
+          </div>
+        </div>
+
 
     </body>
 </html>

@@ -36,15 +36,15 @@ async function run(){
   };
   tokenResponse = await client.acquireTokenSilent(tokenRequest);
 
-  //console.log('Token Response', tokenResponse);
+  //sideBarTopicList'Token Response', tokenResponse);
 
 
-  let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo)',
-  {
-    headers: {
-      'Authorization':`Bearer ${tokenResponse.accessToken}`
-    }
-  });
+  // let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo,Title)',
+  // {
+  //   headers: {
+  //     'Authorization':`Bearer ${tokenResponse.accessToken}`
+  //   }
+  // });
 
   //const sectionData = await getSectionData(tokenResponse.accessToken);
   const sectionData = await getSectionData(tokenResponse.accessToken)
@@ -55,7 +55,7 @@ async function run(){
   processTopicData(topicDataList);
   const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
   subTopicData = subTopicDataList
-  //console.log(topicDataList);
+  //sideBarTopicListtopicDataList);
   processSubtopicData(subTopicDataList);
   const RawitemData = await(getItemData(tokenResponse.accessToken))
   itemData = RawitemData;
@@ -63,30 +63,30 @@ async function run(){
 
 
 
-  let jsonContent = await payload.json();
+  //let jsonContent = await payload.json();
 
-  rawListContent = jsonContent;
+  //rawListContent = jsonContent;
   userAuthenticated = true;
-  document.querySelector('#initialMessage').hidden = true;
+  //document.querySelector('#initialMessage').hidden = true;
 }
 
 async function getItemData(acessToken){
   try{
-    let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo,subTopicLookupId)',
+    let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo,subTopicLookupId,Title)',
   {
     headers: {
       'Authorization':`Bearer ${tokenResponse.accessToken}`
     }
   });
   itemTableRawContent = await payload.json();
-  //console.log(itemTableRawContent.value)
+  //sideBarTopicListitemTableRawContent.value)
   return itemTableRawContent.value
   } catch{
     console.error('Error retrieving item data:', error)
     throw error
   }
 
-  //console.log('GetItem data',itemTableRawContent.value)
+  //sideBarTopicList'GetItem data',itemTableRawContent.value)
 }
 async function getSubTopicData(acessToken){
   try{
@@ -97,7 +97,7 @@ async function getSubTopicData(acessToken){
     }
   });
   subTopicTableRawContent = await payload.json();
-  //console.log('Getsubtopic data',subTopicTableRawContent.value)
+  //sideBarTopicList'Getsubtopic data',subTopicTableRawContent.value)
   return subTopicTableRawContent.value;
   } catch(error){
     console.error('Error retrieving topic data:', error);
@@ -114,7 +114,7 @@ async function getTopicData(acessToken){
     }
   });
   topicTableRawContent = await payload.json();
-  //console.log('GetTopic data',topicTableRawContent.value)
+  //sideBarTopicList'GetTopic data',topicTableRawContent.value)
   topicData = topicTableRawContent.value
   return topicTableRawContent.value;
   } catch(error){
@@ -127,10 +127,10 @@ function processTopicData(topicDataList){
 
   let topicDataToIterate = topicDataList
 
-  const sidebarSectionList = document.getElementById('sidebarSectionList');
+  const sideBarTopicList = document.getElementById('sideBarTopicList');
   //TODO - Melhorar esse mecanismo
   if(selectedSectionDataId != null){
-    sidebarSectionList.innerHTML='';
+    sideBarTopicList.innerHTML='';
 
   } else{
 
@@ -140,12 +140,14 @@ function processTopicData(topicDataList){
 
   topicDataToIterate.forEach(topicObj=>{
     const subTopicRelatedList = document.createElement('ul')
-    const sideBarListItem = document.createElement('h4');
+    subTopicRelatedList.className="topicAndSubTopicGroup"
+    //const sideBarListItem = document.createElement('h4');
     const sidebarLinkText = document.createElement('a');
     subTopicRelatedList.setAttribute('id',"TOP-"+ topicObj.id);
-    sideBarListItem.setAttribute('id',topicObj.id)
+    //sideBarListItem.setAttribute('id',topicObj.id)
     sidebarLinkText.textContent= topicObj.fields.Title;
-    sidebarLinkText.style.color="rgba(0,0, 0, 1)";
+    sidebarLinkText.className = "topicItem"
+    //sidebarLinkText.style.color="rgba(0,0, 0, 1)";
     sidebarLinkText.value=topicObj.fields.Title;
     sidebarLinkText.onclick= function ( ){
       selectedSectionDataId = topicObj.id
@@ -153,9 +155,10 @@ function processTopicData(topicDataList){
       return false;
     };
     //subTopicRelatedList.appendChild(testTagLi);
-    sideBarListItem.appendChild(sidebarLinkText);
-    sideBarListItem.appendChild(subTopicRelatedList);
-    sidebarSectionList.appendChild(sideBarListItem);
+    //sideBarListItem.appendChild(sidebarLinkText);
+    //sideBarListItem.appendChild(subTopicRelatedList);
+    subTopicRelatedList.appendChild(sidebarLinkText)
+    sideBarTopicList.appendChild(subTopicRelatedList);
   });
 }
 async function getSectionData(acessToken){
@@ -167,7 +170,7 @@ async function getSectionData(acessToken){
         }
     });
     sectionTableRawContent = await payload.json();
-    //console.log('GetSection data', sectionTableRawContent.value);
+    //sideBarTopicList'GetSection data', sectionTableRawContent.value);
     sectionData = sectionTableRawContent.value;
     return sectionTableRawContent.value;
   } catch(error){
@@ -180,6 +183,7 @@ function processSectionData(sectionData){
   sectionData.forEach(sectionObj=>{
     const headerListItem = document.createElement('li');
     const headerLinkText = document.createElement('a');
+    headerLinkText.className = "sectionButton"
     headerLinkText.textContent= sectionObj.fields.Title;
     headerLinkText.style.color="rgba(255,255, 255, 1)";
     headerLinkText.value=sectionObj.fields.Title
@@ -211,21 +215,22 @@ function processSubtopicData(subTopicData){
     } catch(error){
 
     }
-    //console.log('parent ID',subTopicData.fields.topicLookupId);
+    //sideBarTopicList'parent ID',subTopicData.fields.topicLookupId);
 
   });
 }
 function processItemData(itemData){
-  const itemContentDiv = document.getElementById('itemContentDiv');
+  //Locate the main div for each item data content manipulation
+  const itemContentDiv = document.getElementById('main');
   let SubTopicRelatedItem = subTopicData;
   let itemDataToIterate = itemData;
 
   if(selectedSectionDataId != null){
-    console.log(selectedSectionDataId)
+    //console.log(selectedSectionDataId)
     itemContentDiv.innerHTML='';
 
   } else{
-    console.log(' vazio');
+    //console.log(' vazio');
     const InitialTopicDataToIterate = topicData.filter((topic)=> topic.fields.sectionLookupId === "1");
     const InitialSubTopicDataToIterate = subTopicData;
     const SubTopicRelatedItem = InitialSubTopicDataToIterate.filter(subtopic => {
@@ -244,15 +249,49 @@ function processItemData(itemData){
   }
   itemDataToIterate.forEach((itemData)=>{
     const relatedSubTopicData = SubTopicRelatedItem.find((subTopic)=> subTopic.fields.id === itemData.fields.subTopicLookupId );
-    console.log('related parent subtopic', "SUBTOP-"+ relatedSubTopicData.id)
-    let itemDataDiv = document.createElement('div');
-    itemDataDiv.setAttribute('id', "IT-"+itemData.id);
-    let itemDataText = document.createElement('p');
-    itemDataText.textContent = itemData.fields.Texto;
-    itemDataDiv.appendChild(itemDataText);
-    itemContentDiv.appendChild(itemDataDiv)
+    //sideBarTopicList'related parent subtopic', "SUBTOP-"+ relatedSubTopicData.id);
+    //Item ContainerDiv
+    let container = document.createElement('div');
+    container.setAttribute('id', "itemContainer" + "-"  + itemData.id);
+    container.className = "itemDisplayContainer";
+    //Item itemcontainerHeader
+    let containerHeader = document.createElement('div');
+    containerHeader.setAttribute('id', "itemContainerHeader"+ "-" + itemData.id);
+    containerHeader.className = "itemContainerHeader";
+    //Adiciona Container header ao container
+    container.appendChild(containerHeader)
+    // Item Container HeaderTitle
+    let containerHeaderTitle = document.createElement('p');
+    containerHeaderTitle.className = "containerHeader";
+    containerHeaderTitle.setAttribute('id', "containerHeaderTitle"+ "-" + itemData.id );
+    containerHeaderTitle.textContent = itemData.fields.Title;
+    //Adiciona o containerHeaderTitle ao containerHeader
+    containerHeader.appendChild(containerHeaderTitle);
+    //Item containerBody itemContentBody
+    let containerBody = document.createElement('div');
+    containerBody.className = "itemContentBody";
+    containerBody.setAttribute('id', "itemContentBody"+ "-" + itemData.id );
+    //Adiciona o containerBody ao container
+    container.appendChild(containerBody);
+    //Item body itemText
+    let itemText = document.createElement('p');
+    itemText.className = "itemText";
+    itemText.textContent = itemData.fields.Texto
+    itemText.setAttribute('id', "itemText"+ "-" + itemData.id );
+    //Adiciona o itemText ao containerBody
+    containerBody.appendChild(itemText);
+    //Adiciona a containerDiv criada na main div
+    itemContentDiv.appendChild(container)
+
+
+    // let itemDataDiv = document.createElement('div');
+    // itemDataDiv.setAttribute('id', "IT-"+itemData.id);
+    // let itemDataText = document.createElement('p');
+    // itemDataText.textContent = itemData.fields.Title;
+    // itemDataDiv.appendChild(itemDataText);
+    // itemContentDiv.appendChild(itemDataDiv)
   })
-  //console.log(itemData)
+  //sideBarTopicListitemData)
 }
 //test Function
 function doSomething(testText){
@@ -306,3 +345,20 @@ function filterItemData(sectionDataId){
 // Get the Json Response data
 // Process Json response data
 // Render Json Response data in page
+
+/////// Dom element Manupilation
+// var dropdown = document.getElementsByClassName("dropdown-btn");
+// var i;
+
+//     for (i = 0; i < dropdown.length; i++) {
+//       dropdown[i].addEventListener("click", function() {
+//         this.classList.toggle("active");
+//         var dropdownContent = this.nextElementSibling;
+//         if (dropdownContent.style.display === "flex") {
+//           dropdownContent.style.display = "none";
+//         } else {
+//           dropdownContent.style.display = "flex";
+//           dropdownContent.style.flexDirection = "column";
+//         }
+//       });
+//     }
