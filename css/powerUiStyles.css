@@ -159,7 +159,7 @@ nav{
 .pageContent{
   width: 100%;
 }
-.itemDisplayContainer{
+.itemDisplayContainer,.subTopicDisplayContainer{
   width: 100%;
   height: auto;
   border: 1px solid black;
@@ -176,13 +176,23 @@ nav{
   /* position: relative;
   top: 50%;
   transform: translate(0, -50%); */
-  padding: 10px;
-  font-size: 25px;
+  padding: 8px 8px 4px 10px ;
+  font-size: 20px;
+  font-weight: bold;
 }
 .itemText{
 padding: 20px;
-font-size: 18px;
+font-size: 15px;
 }
 .itemImage{
   padding-left: 50px;
+}
+.subTopicTitle{
+  padding: 8px 8px 4px 10px ;
+  font-size: 25px;
+  font-weight: bolder;
+}
+.subTopicText{
+  padding: 15px;
+  font-size: 18px;
 }
