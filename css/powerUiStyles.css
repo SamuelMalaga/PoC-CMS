@@ -59,10 +59,8 @@ nav{
   height: 90vh;
   display: flex;
 }
-
-
-/* Fixed sidenav, full height */
-.sidenav {
+/* debug sidenav, full height */
+.debugSidenav {
   height: 90vh;
   width: 270px;
   /* position: absolute; */
@@ -72,6 +70,21 @@ nav{
   background-color: whitesmoke;
   overflow-x: hidden;
   padding-top: 20px;
+  /* visibility: hidden; */
+}
+
+/* Fixed sidenav, full height */
+.sidenav {
+  height: 90vh;
+  width: 0px;
+  /* position: absolute; */
+  z-index: 1;
+  bottom: 0;
+  left: 0;
+  background-color: whitesmoke;
+  overflow-x: hidden;
+  padding-top: 20px;
+  /* visibility: hidden; */
 }
 
 /* Style the sidenav links and the dropdown button */
@@ -92,6 +105,9 @@ nav{
 /* On mouse-over */
 .sidenav .topicItem:hover, .dropdown-btn:hover {
   color: #192DD3;
+}
+.bodyContent{
+  height: auto;
 }
 
 /* Main content */
@@ -154,13 +170,19 @@ nav{
   width: 100%;
   border: 1px solid green;
   height: 80px;
+  padding-left: 15px;
 }
 .itemTitle{
-  position: relative;
+  /* position: relative;
   top: 50%;
-  transform: translate(0, -50%);
+  transform: translate(0, -50%); */
   padding: 10px;
+  font-size: 25px;
 }
 .itemText{
 padding: 20px;
+font-size: 18px;
+}
+.itemImage{
+  padding-left: 50px;
 }

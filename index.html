@@ -15,32 +15,11 @@
         </title>
     </head>
     <body>
-        <!-- HeaderNavigation Menu -->
-        <!-- <header>
-            <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
-                <nav class="uk-navbar-container">
-                  <div class="uk-container">
-                    <div data-uk-navbar>
-                      <div class="uk-navbar-left">
-                        <a class="uk-navbar-item uk-logo uk-visible@m" href="index.html">EloGroup | PowerUi</a>
-                         É aqui que o link de todas as seções são renderizados
-                        <ul class="uk-navbar-nav uk-visible@m" id="headerSectionList">
-                          <li >
-                            <a href="#" onclick="run()" style="color:rgba(255,255, 255, 1) ">Acessar a Documentação</a>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </nav>
-            </div>
-
-        </header> -->
         <div class="header">
           <nav>
             <p class="pageTitle">EloGroup | PowerUi</p>
             <ul class="nav-section-links" id="headerSectionList">
-              <li class="loginBtn" onclick="run()">Log In</li>
+              <li class="loginBtn" id="loginBtn" onclick="run()">Log In</li>
             </ul>
           </nav>
         </div>
@@ -48,8 +27,10 @@
             <!-- New SideNav -->
           <div class="sidenav" id="sideBarTopicList">
           </div>
-          <!-- Sidebar Nav -->
           <div  class="main" id="main">
+            <div class="initialMessage">
+              <p class="initialWelcome">Teste 1234</p>
+            </div>
               <!-- <div id="pageContent" class="">
 
               </div> -->

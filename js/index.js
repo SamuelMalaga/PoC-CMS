@@ -12,6 +12,7 @@ let contentData = new Array();
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
 async function run(){
+  document.getElementById('loginBtn').style.visibility = "hidden"
 
   //Config to connect to elogroup sp using msal auth
   const config = {
@@ -36,38 +37,23 @@ async function run(){
   };
   tokenResponse = await client.acquireTokenSilent(tokenRequest);
 
-  //sideBarTopicList'Token Response', tokenResponse);
 
 
-  // let payload = await fetch('https://graph.microsoft.com/v1.0/sites/root/lists/473f4f64-5200-4133-bf98-dcf975654344/items?expand=fields(select=Texto,linkInfo,imageInfo,Title)',
-  // {
-  //   headers: {
-  //     'Authorization':`Bearer ${tokenResponse.accessToken}`
-  //   }
-  // });
-
-  //const sectionData = await getSectionData(tokenResponse.accessToken);
   const sectionData = await getSectionData(tokenResponse.accessToken)
   //selectedSectionDataId = 1;
   processSectionData(sectionData);
   const topicDataList = await getTopicData(tokenResponse.accessToken);
   topicData = topicDataList;
+  document.getElementById('sideBarTopicList').style.width='270px' ;
   processTopicData(topicDataList);
   const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
   subTopicData = subTopicDataList
-  //sideBarTopicListtopicDataList);
   processSubtopicData(subTopicDataList);
   const RawitemData = await(getItemData(tokenResponse.accessToken))
   itemData = RawitemData;
   processItemData(itemData);
 
-
-
-  //let jsonContent = await payload.json();
-
-  //rawListContent = jsonContent;
   userAuthenticated = true;
-  //document.querySelector('#initialMessage').hidden = true;
 }
 
 async function getItemData(acessToken){
@@ -244,7 +230,7 @@ function processItemData(itemData){
     })
     // const InitialTopicDataIds = InitialTopicDataToIterate.map(topicData => topicData.id );
     // const filteredTopicData = InitialTopicDataToIterate.filter(InitialTopicData => InitialTopicDataIds.includes(InitialTopicData.fields.topicLookupId))
-    console.log('Items',itemDataToIterate)
+    //console.log('Items',itemDataToIterate)
     //console.log(InitialSubTopicDataToIterate)
   }
   itemDataToIterate.forEach((itemData)=>{
@@ -256,14 +242,14 @@ function processItemData(itemData){
     container.className = "itemDisplayContainer";
     //Item itemcontainerHeader
     let containerHeader = document.createElement('div');
-    containerHeader.setAttribute('id', "itemContainerHeader"+ "-" + itemData.id);
-    containerHeader.className = "itemContainerHeader";
+    containerHeader.setAttribute('id', "containerHeader"+ "-" + itemData.id);
+    containerHeader.className = "containerHeader";
     //Adiciona Container header ao container
     container.appendChild(containerHeader)
     // Item Container HeaderTitle
     let containerHeaderTitle = document.createElement('p');
-    containerHeaderTitle.className = "containerHeader";
-    containerHeaderTitle.setAttribute('id', "containerHeaderTitle"+ "-" + itemData.id );
+    containerHeaderTitle.className = "itemTitle";
+    containerHeaderTitle.setAttribute('id', "itemTitle"+ "-" + itemData.id );
     containerHeaderTitle.textContent = itemData.fields.Title;
     //Adiciona o containerHeaderTitle ao containerHeader
     containerHeader.appendChild(containerHeaderTitle);
@@ -281,17 +267,15 @@ function processItemData(itemData){
     //Adiciona o itemText ao containerBody
     containerBody.appendChild(itemText);
     //Adiciona a containerDiv criada na main div
-    itemContentDiv.appendChild(container)
+    itemContentDiv.appendChild(container);
+    //console.log(itemData.fields.imageInfo);
+    //console.log(itemData);
+    try{
+      container.appendChild(processImageResponse(itemData));
+    }catch(e){}
+    processItemText(itemData);
 
-
-    // let itemDataDiv = document.createElement('div');
-    // itemDataDiv.setAttribute('id', "IT-"+itemData.id);
-    // let itemDataText = document.createElement('p');
-    // itemDataText.textContent = itemData.fields.Title;
-    // itemDataDiv.appendChild(itemDataText);
-    // itemContentDiv.appendChild(itemDataDiv)
   })
-  //sideBarTopicListitemData)
 }
 //test Function
 function doSomething(testText){
@@ -331,6 +315,31 @@ function filterItemData(sectionDataId){
     })
   })
   processItemData(sectionFiltereditemData);
+}
+function processImageResponse(itemObj){
+  //console.log(itemObj.fields.imageInfo)
+  id = itemObj.id
+  //console.log(typeof itemObj.fields.imageInfo)
+  if(typeof itemObj.fields.imageInfo ==='undefined'){
+    //console.log(itemData.fields.imageInfo)
+    return;
+  } else{
+    //console.log(itemObj.fields.imageInfo)
+    imageJsonResponse = JSON.parse(itemObj.fields.imageInfo);
+    let imageLink = imageJsonResponse.serverUrl + imageJsonResponse.serverRelativeUrl;
+    let imageContent = document.createElement('img');
+    imageContent.src = imageLink;
+    let imageDiv = document.createElement('div');
+    imageDiv.setAttribute('id', "ItemImg-"+id);
+    imageDiv.className = "itemImage";
+    imageDiv.appendChild(imageContent);
+    return imageDiv
+  }
+
+}
+function processItemText(itemData){
+  console.log(itemData.fields.Texto)
+
 }
 
 
