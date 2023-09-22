@@ -20,7 +20,7 @@ async function run(){
     auth:{
       clientId:'acb41c67-8c92-4bdc-a3bd-4a93f7f29b8e',
       authority:'https://login.microsoftonline.com/298ec275-be18-4a15-bb9c-ad62eceeb328',
-      redirectUri:'https://samuelmalaga.github.io/PoC-CMS/'
+      redirectUri:'https://samuelmalaga.github.io/PoC-CMS'
     }
   }
 
