@@ -4,6 +4,9 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
 }
+body{
+  height: 100%;
+}
 .header{
   height: 10vh;
   width: 100%;
@@ -55,9 +58,9 @@ nav{
   font-size: 25px;
 }
 .bodyContent{
-  border: 1px solid green;
-  height: 90vh;
   display: flex;
+  height: 100%;
+
 }
 /* debug sidenav, full height */
 .debugSidenav {
@@ -75,7 +78,7 @@ nav{
 
 /* Fixed sidenav, full height */
 .sidenav {
-  height: 90vh;
+  height: auto;
   width: 0px;
   /* position: absolute; */
   z-index: 1;
@@ -106,9 +109,7 @@ nav{
 .sidenav .topicItem:hover, .dropdown-btn:hover {
   color: #192DD3;
 }
-.bodyContent{
-  height: auto;
-}
+
 
 /* Main content */
 .main {
@@ -116,7 +117,6 @@ nav{
   font-size: 20px; /* Increased text to enable scrolling */
   padding: 10px;
   width: 100%;
-  border: 1px solid red;
 }
 
 /* Add an active class to the active dropdown button */
@@ -162,13 +162,11 @@ nav{
 .itemDisplayContainer,.subTopicDisplayContainer{
   width: 100%;
   height: auto;
-  border: 1px solid black;
   word-break: break-all;
 
 }
 .itemcontainerHeader{
   width: 100%;
-  border: 1px solid green;
   height: 80px;
   padding-left: 15px;
 }

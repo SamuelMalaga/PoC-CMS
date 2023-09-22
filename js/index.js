@@ -1,18 +1,18 @@
 let rawListContent = null;
-let userAuthenticated = false;
 let tokenResponse = null;
 let itemTableRawContent = null;
 let topicTableRawContent = null;
 let sectionTableRawContent = null;
 let sectionContent = null;
 let selectedSectionDataId = null;
+//let itemData =null;
 let topicData = null;
-//let itemData = null;
 let subTopicDataArray = null;
 let contentData = new Array();
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
 async function run(){
+  //Esconde o login Button ao clicar
   document.getElementById('loginBtn').style.visibility = "hidden"
 
   //Config to connect to elogroup sp using msal auth
@@ -20,7 +20,7 @@ async function run(){
     auth:{
       clientId:'acb41c67-8c92-4bdc-a3bd-4a93f7f29b8e',
       authority:'https://login.microsoftonline.com/298ec275-be18-4a15-bb9c-ad62eceeb328',
-      redirectUri:'http://localhost:8080'
+      redirectUri:'https://samuelmalaga.github.io/PoC-CMS/'
     }
   }
 
@@ -39,23 +39,28 @@ async function run(){
   tokenResponse = await client.acquireTokenSilent(tokenRequest);
 
 
-
+  //Puxa os dados da lista section no sharepoint
   const sectionData = await getSectionData(tokenResponse.accessToken)
-  //selectedSectionDataId = 1;
   processSectionData(sectionData);
+  //Puxa os dados da lista topic no sharepoint
   const topicDataList = await getTopicData(tokenResponse.accessToken);
   topicData = topicDataList;
-  document.getElementById('sideBarTopicList').style.width='270px' ;
   processTopicData(topicDataList);
+  //Mostra a sidebar após o login
+  document.getElementById('sideBarTopicList').style.width='270px' ;
+  //Puxa os dados da lista subTopic no sharepoint
   const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
   subTopicData = subTopicDataList
   processSubtopicData(subTopicDataList);
+  //Mostra apenas os subtópico do primeiro tópico da primeira seção
   displaySubTopicInfo(subTopicData[0]);
+  //Puxa os dados da lista items no sharepoint
   const RawitemData = await(getItemData(tokenResponse.accessToken))
   itemData = RawitemData;
+  //Mostra apenas os itens referentes ao primeiro subtópico
+  //TODO - Melhorar a lógica dos processadores de Itens
   processItemData(itemData,subTopicData[0] );
 
-  userAuthenticated = true;
 }
 
 async function getItemData(acessToken){
@@ -67,14 +72,11 @@ async function getItemData(acessToken){
     }
   });
   itemTableRawContent = await payload.json();
-  //sideBarTopicListitemTableRawContent.value)
   return itemTableRawContent.value
   } catch{
     console.error('Error retrieving item data:', error)
     throw error
   }
-
-  //sideBarTopicList'GetItem data',itemTableRawContent.value)
 }
 async function getSubTopicData(acessToken){
   try{
@@ -85,7 +87,6 @@ async function getSubTopicData(acessToken){
     }
   });
   subTopicTableRawContent = await payload.json();
-  //sideBarTopicList'Getsubtopic data',subTopicTableRawContent.value)
   return subTopicTableRawContent.value;
   } catch(error){
     console.error('Error retrieving topic data:', error);
@@ -102,7 +103,6 @@ async function getTopicData(acessToken){
     }
   });
   topicTableRawContent = await payload.json();
-  //sideBarTopicList'GetTopic data',topicTableRawContent.value)
   topicData = topicTableRawContent.value
   return topicTableRawContent.value;
   } catch(error){
@@ -125,26 +125,20 @@ function processTopicData(topicDataList){
     topicDataToIterate = topicDataList.filter((topic)=> topic.fields.sectionLookupId === "1")
 
   }
-
+  //Construtor de elementos DOM para o topicData
   topicDataToIterate.forEach(topicObj=>{
     const subTopicRelatedList = document.createElement('ul')
     subTopicRelatedList.className="topicAndSubTopicGroup"
-    //const sideBarListItem = document.createElement('h4');
     const sidebarLinkText = document.createElement('a');
     subTopicRelatedList.setAttribute('id',"TOP-"+ topicObj.id);
-    //sideBarListItem.setAttribute('id',topicObj.id)
     sidebarLinkText.textContent= topicObj.fields.Title;
     sidebarLinkText.className = "topicItem"
-    //sidebarLinkText.style.color="rgba(0,0, 0, 1)";
     sidebarLinkText.value=topicObj.fields.Title;
     sidebarLinkText.onclick= function ( ){
       selectedSectionDataId = topicObj.id
       doSomething(topicObj.id);
       return false;
     };
-    //subTopicRelatedList.appendChild(testTagLi);
-    //sideBarListItem.appendChild(sidebarLinkText);
-    //sideBarListItem.appendChild(subTopicRelatedList);
     subTopicRelatedList.appendChild(sidebarLinkText)
     sideBarTopicList.appendChild(subTopicRelatedList);
   });
@@ -158,7 +152,6 @@ async function getSectionData(acessToken){
         }
     });
     sectionTableRawContent = await payload.json();
-    //sideBarTopicList'GetSection data', sectionTableRawContent.value);
     sectionData = sectionTableRawContent.value;
     return sectionTableRawContent.value;
   } catch(error){
@@ -175,11 +168,11 @@ function processSectionData(sectionData){
     headerLinkText.textContent= sectionObj.fields.Title;
     headerLinkText.style.color="rgba(255,255, 255, 1)";
     headerLinkText.value=sectionObj.fields.Title
+    //Atribui ao header Link as chamadas de funções necessárias para manipular os itens e os subtópicos
     headerLinkText.onclick= function ( ){
       selectedSectionDataId = sectionObj.id
       filterTopicData(selectedSectionDataId);
       const filteredSubTopicData = filterSubTopicData(selectedSectionDataId);
-      //filterItemData(selectedSectionDataId);
       console.log("sub topicos disponíves para o sidenav:",filteredSubTopicData);
       displaySubTopicInfo(filteredSubTopicData[0])
       filterItemData(filteredSubTopicData[0].id,filteredSubTopicData[0] );
@@ -200,7 +193,6 @@ function processSubtopicData(subTopicData){
     subTopicListItemLink.onclick = function(){
       window.alert("Subtopic" + subTopicData.id);
       let subTopicObject = subTopicData;
-      //createSubTopicSection(subTopicData.id);
       displaySubTopicInfo(subTopicData)
       filterItemData(itemData,subTopicData)
       return false
@@ -210,58 +202,26 @@ function processSubtopicData(subTopicData){
     const parentTopic = document.getElementById(parentDomId);
     subTopicListItem.appendChild(subTopicListItemLink);
     //TODO - Melhorar essa lógica de try catch
-    try{
-      parentTopic.appendChild(subTopicListItem);
-    } catch(error){
-
-    }
-    //sideBarTopicList'parent ID',subTopicData.fields.topicLookupId);
-
+    try{parentTopic.appendChild(subTopicListItem)} catch(error){}
   });
 }
+//Função não utilizada
 function createSubTopicSection(subTopicId){
   const mainDiv = document.getElementById('main');
   mainDiv.innerHTML ='';
   let subTopicTest = document.createElement('p');
   subTopicTest.textContent = "Esse é um teste" + subTopicId;
   mainDiv.appendChild(subTopicTest);
-
 }
 function processItemData(itemData,subTopicTest){
   //Locate the main div for each item data content manipulation
   const itemContentDiv = document.getElementById('main');
   let SubTopicRelatedItem = subTopicData;
   let itemDataToIterate = itemData;
-
-  // if(selectedSectionDataId != null){
-  //   //console.log(selectedSectionDataId)
-  //   itemContentDiv.innerHTML='';
-
-  // } else{
-  //   //console.log(' vazio');
-  //   const InitialTopicDataToIterate = topicData.filter((topic)=> topic.fields.sectionLookupId === "1");
-  //   const InitialSubTopicDataToIterate = subTopicData;
-  //   const SubTopicRelatedItem = InitialSubTopicDataToIterate.filter(subtopic => {
-  //     const topicIdReferenciado = subtopic.fields.topicLookupId;
-  //     return InitialTopicDataToIterate.some(topic => topic.id ===topicIdReferenciado);
-  //   })
-  //   const InitialItemData = itemData;
-  //   itemDataToIterate = InitialItemData.filter(item =>{
-  //     const itemIdReferenciado = item.fields.subTopicLookupId;
-  //     return SubTopicRelatedItem.some(subtopic => subtopic.id === itemIdReferenciado)
-  //   })
-  //   // const InitialTopicDataIds = InitialTopicDataToIterate.map(topicData => topicData.id );
-  //   // const filteredTopicData = InitialTopicDataToIterate.filter(InitialTopicData => InitialTopicDataIds.includes(InitialTopicData.fields.topicLookupId))
-  //   //console.log('Items',itemDataToIterate)
-  //   //console.log(InitialSubTopicDataToIterate)
-  // }
-  console.log("Veio do process | Id",subTopicTest.id)
   let testItemData = itemDataToIterate.filter(itemData=> itemData.fields.subTopicLookupId === subTopicTest.id);
-  console.log("Veio do process | itemdatatoiterate",testItemData);
   //Gera os elementos DOM para cada item data
   testItemData.forEach((itemData)=>{
     const relatedSubTopicData = SubTopicRelatedItem.find((subTopic)=> subTopic.fields.id === itemData.fields.subTopicLookupId );
-    //sideBarTopicList'related parent subtopic', "SUBTOP-"+ relatedSubTopicData.id);
     //Item ContainerDiv
     let container = document.createElement('div');
     container.setAttribute('id', "itemContainer" + "-"  + itemData.id);
@@ -296,10 +256,7 @@ function processItemData(itemData,subTopicTest){
     itemContentDiv.appendChild(container);
     //console.log(itemData.fields.imageInfo);
     //console.log(itemData);
-    try{
-      container.appendChild(processImageResponse(itemData));
-    }catch(e){}
-
+    try{container.appendChild(processImageResponse(itemData))}catch(e){}
   })
 }
 //test Function
@@ -329,6 +286,7 @@ function filterSubTopicData(sectionDataId){
   processSubtopicData(sectionFilteredSubTopicData);
   return sectionFilteredSubTopicData;
 }
+//
 function filterItemData(sectionDataId,subTopicTest){
   // let sectionFiltereditemData = new Array();
   // let sectionFilteredSubTopicData = new Array();
