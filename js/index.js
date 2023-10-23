@@ -5,10 +5,18 @@ let topicTableRawContent = null;
 let sectionTableRawContent = null;
 let sectionContent = null;
 let selectedSectionDataId = null;
-//let itemData =null;
 let topicData = null;
-let subTopicDataArray = null;
 let contentData = new Array();
+//Globar variables to store content data, those variables load all content data
+let sectionDataArray = null
+let topicDataArray = null
+let subTopicDataArray = null
+let itemDataArray = null
+//Global variables to store the selected content data
+let selectedSection = null
+let selectedTopic = null
+let selectedSubTopic = null
+let selectedItem=null
 //TODO - Verificar se o método de autenticação de redirect (não o de popup) é menos bugado
 //Realiza a autenticação do usuário usando o OAuthFlow da microsoft com o tenant @elogroup
 async function run(){
@@ -20,7 +28,7 @@ async function run(){
     auth:{
       clientId:'acb41c67-8c92-4bdc-a3bd-4a93f7f29b8e',
       authority:'https://login.microsoftonline.com/298ec275-be18-4a15-bb9c-ad62eceeb328',
-      redirectUri:'https://samuelmalaga.github.io/PoC-CMS/' //Dev
+      redirectUri:'http://localhost:8080' //Dev
       //http://localhost:8080
       //https://samuelmalaga.github.io/PoC-CMS/ ---> Prod
     }
@@ -40,28 +48,41 @@ async function run(){
   };
   tokenResponse = await client.acquireTokenSilent(tokenRequest);
 
-
-  //Puxa os dados da lista section no sharepoint
-  const sectionData = await getSectionData(tokenResponse.accessToken)
-  processSectionData(sectionData);
-  //Puxa os dados da lista topic no sharepoint
-  const topicDataList = await getTopicData(tokenResponse.accessToken);
-  topicData = topicDataList;
-  processTopicData(topicDataList);
-  //Mostra a sidebar após o login
+  //Shows the sidenav on login
   document.getElementById('sideBarTopicList').style.width='270px' ;
-  //Puxa os dados da lista subTopic no sharepoint
-  const subTopicDataList = await getSubTopicData(tokenResponse.accessToken);
-  subTopicData = subTopicDataList
-  processSubtopicData(subTopicDataList);
-  //Mostra apenas os subtópico do primeiro tópico da primeira seção
-  displaySubTopicInfo(subTopicData[0]);
-  //Puxa os dados da lista items no sharepoint
-  const RawitemData = await(getItemData(tokenResponse.accessToken))
-  itemData = RawitemData;
-  //Mostra apenas os itens referentes ao primeiro subtópico
-  //TODO - Melhorar a lógica dos processadores de Itens
-  processItemData(itemData,subTopicData[0] );
+  //Puxa os dados da lista section no sharepoint
+  const sectionData = await getSectionData(tokenResponse.accessToken);
+  sectionDataArray = sectionData;
+  const topicData = await getTopicData(tokenResponse.accessToken);
+  topicDataArray = topicData;
+  const subTopicData = await getSubTopicData(tokenResponse.accessToken);
+  console.log(subTopicData)
+  subTopicDataArray = subTopicData;
+  const itemData = await(getItemData(tokenResponse.accessToken));
+  itemDataArray = itemData
+  processSectionData(sectionDataArray);
+  const defaultSelectedSection = sectionDataArray[0]
+  processTopicData(topicDataArray);
+  processSubtopicData(defaultSelectedSection.id);
+  selectedSubTopic = subTopicData[0]
+  processItemData(selectedSubTopic.id)
+  // //Puxa os dados da lista topic no sharepoint
+
+  // topicData = topicDataList;
+  // processTopicData(topicDataList);
+  // //Mostra a sidebar após o login
+
+  // //Puxa os dados da lista subTopic no sharepoint
+  // subTopicData = subTopicDataList
+  // processSubtopicData(subTopicDataList);
+  // //Mostra apenas os subtópico do primeiro tópico da primeira seção
+  // displaySubTopicInfo(subTopicData[0]);
+  // //Puxa os dados da lista items no sharepoint
+
+  // itemData = RawitemData;
+  // //Mostra apenas os itens referentes ao primeiro subtópico
+  // //TODO - Melhorar a lógica dos processadores de Itens
+  // processItemData(itemData,subTopicData[0] );
 
 }
 
@@ -121,11 +142,8 @@ function processTopicData(topicDataList){
   //TODO - Melhorar esse mecanismo
   if(selectedSectionDataId != null){
     sideBarTopicList.innerHTML='';
-
   } else{
-
     topicDataToIterate = topicDataList.filter((topic)=> topic.fields.sectionLookupId === "1")
-
   }
   //Construtor de elementos DOM para o topicData
   topicDataToIterate.forEach(topicObj=>{
@@ -137,8 +155,10 @@ function processTopicData(topicDataList){
     sidebarLinkText.className = "topicItem"
     sidebarLinkText.value=topicObj.fields.Title;
     sidebarLinkText.onclick= function ( ){
+      selectedTopic = topicObj
+      const testFilter = subTopicDataArray.filter(subTopicObj => subTopicObj.fields.topicLookupId===selectedTopic.id)
       selectedSectionDataId = topicObj.id
-      doSomething(topicObj.id);
+      console.log(testFilter)
       return false;
     };
     subTopicRelatedList.appendChild(sidebarLinkText)
@@ -172,12 +192,16 @@ function processSectionData(sectionData){
     headerLinkText.value=sectionObj.fields.Title
     //Atribui ao header Link as chamadas de funções necessárias para manipular os itens e os subtópicos
     headerLinkText.onclick= function ( ){
-      selectedSectionDataId = sectionObj.id
-      filterTopicData(selectedSectionDataId);
-      const filteredSubTopicData = filterSubTopicData(selectedSectionDataId);
-      console.log("sub topicos disponíves para o sidenav:",filteredSubTopicData);
-      displaySubTopicInfo(filteredSubTopicData[0])
-      filterItemData(filteredSubTopicData[0].id,filteredSubTopicData[0] );
+      selectedSection = sectionObj;
+      console.log('This section',selectedSection.id);
+      selectedSectionDataId = selectedSection.id
+      const relatedTopicData = topicData.filter(topicObj => topicObj.fields.sectionLookupId === selectedSection.id);
+      console.log('related topics', relatedTopicData);
+      processTopicData(relatedTopicData);
+      processSubtopicData(selectedSection.id);
+      // const filteredSubTopicData = filterSubTopicData(selectedSectionDataId);
+      // displaySubTopicInfo(filteredSubTopicData[0])
+      // filterItemData(filteredSubTopicData[0].id,filteredSubTopicData[0] );
       return false;
     };
     headerListItem.appendChild(headerLinkText);
@@ -185,27 +209,40 @@ function processSectionData(sectionData){
   });
 }
 //Populates the sidenav
-function processSubtopicData(subTopicData){
-  let subTopicDataToIterate = subTopicData;
-  subTopicDataToIterate.forEach((subTopicData) => {
-    const relatedTopicData = topicData.find((topic)=> topic.fields.id === subTopicData.fields.topicLookupId);
-    const parentDomId = "TOP-"+  relatedTopicData.id
+function processSubtopicData(selectedSectionId){
+  const sectionRelatedTopicData = topicDataArray.filter(topicObj => topicObj.fields.sectionLookupId===selectedSectionId)
+  // let subTopicDataToIterate = subTopicData;
+  const subTopicBySection = new Array();
+  //Gets all the subtopic related to the topics and sections shown in the screen
+  sectionRelatedTopicData.forEach((topicObj) => {
+    const subtopicByTopic = subTopicDataArray.filter(subTopicObj => subTopicObj.fields.topicLookupId===topicObj.id)
+    subtopicByTopic.forEach((subtopic) => {
+      subTopicBySection.push(subtopic)
+    })
+  });
+  //Iterates through each subtopic obj and creates the DOM element for it
+  //TODO - Create a function to create DOM Element instead of doing it inside the code
+  subTopicBySection.forEach((subTopicObj)=>{
+    const parentDomId = "TOP-" +  subTopicObj.fields.topicLookupId
     let subTopicListItem = document.createElement('li');
     let subTopicListItemLink = document.createElement('a');
     subTopicListItemLink.onclick = function(){
-      window.alert("Subtopic" + subTopicData.id);
-      let subTopicObject = subTopicData;
-      displaySubTopicInfo(subTopicData)
-      filterItemData(itemData,subTopicData)
+      testeGetItemData = itemDataArray.filter(itemObj=>itemObj.fields.subTopicLookupId === subTopicObj.id)
+      window.alert("Subtopic ID" + subTopicObj.id);
+      selectedSubTopic = subTopicObj
+      processItemData(selectedSubTopic.id)
+      console.log(testeGetItemData)
+      //displaySubTopicInfo(subTopicData)
+      // filterItemData(itemData,subTopicData)
       return false
     }
-    subTopicListItemLink.textContent=subTopicData.fields.Title;
-    subTopicListItemLink.setAttribute('id',"SUBTOP-"+ subTopicData.id)
+    subTopicListItemLink.textContent=subTopicObj.fields.Title;
+    subTopicListItemLink.setAttribute('id',"SUBTOP-"+ subTopicObj.id)
     const parentTopic = document.getElementById(parentDomId);
     subTopicListItem.appendChild(subTopicListItemLink);
     //TODO - Melhorar essa lógica de try catch
     try{parentTopic.appendChild(subTopicListItem)} catch(error){}
-  });
+  })
 }
 //Função não utilizada
 function createSubTopicSection(subTopicId){
@@ -215,15 +252,16 @@ function createSubTopicSection(subTopicId){
   subTopicTest.textContent = "Esse é um teste" + subTopicId;
   mainDiv.appendChild(subTopicTest);
 }
-function processItemData(itemData,subTopicTest){
+function processItemData(parentSubtopicId){
+  const mainContent = document.getElementById('main');
+  //Clears the main div for content
+  mainContent.innerHTML=''
   //Locate the main div for each item data content manipulation
   const itemContentDiv = document.getElementById('main');
-  let SubTopicRelatedItem = subTopicData;
-  let itemDataToIterate = itemData;
-  let testItemData = itemDataToIterate.filter(itemData=> itemData.fields.subTopicLookupId === subTopicTest.id);
+  const itemDataToDisplay = itemDataArray.filter(itemData=> itemData.fields.subTopicLookupId === parentSubtopicId);
   //Gera os elementos DOM para cada item data
-  testItemData.forEach((itemData)=>{
-    const relatedSubTopicData = SubTopicRelatedItem.find((subTopic)=> subTopic.fields.id === itemData.fields.subTopicLookupId );
+  itemDataToDisplay.forEach((itemData)=>{
+    // const relatedSubTopicData = SubTopicRelatedItem.find((subTopic)=> subTopic.fields.id === itemData.fields.subTopicLookupId );
     //Item ContainerDiv
     let container = document.createElement('div');
     container.setAttribute('id', "itemContainer" + "-"  + itemData.id);
@@ -256,8 +294,6 @@ function processItemData(itemData,subTopicTest){
     containerBody.appendChild(itemText);
     //Adiciona a containerDiv criada na main div
     itemContentDiv.appendChild(container);
-    //console.log(itemData.fields.imageInfo);
-    //console.log(itemData);
     try{container.appendChild(processImageResponse(itemData))}catch(e){}
   })
 }
@@ -281,8 +317,7 @@ function filterSubTopicData(sectionDataId){
     });
 
   });
-  //console.log("Sub tópicos disponíveis na página" ,sectionFilteredSubTopicData);
-  //console.log("Primeiro subtopic da lista de Sub tópicos disponíveis na página", sectionFilteredSubTopicData[0].fields.Title)
+
 
   //Populates the sidenav
   processSubtopicData(sectionFilteredSubTopicData);
@@ -307,22 +342,15 @@ function filterItemData(sectionDataId,subTopicTest){
   //   })
   // })
   let testSubtopicDataId = subTopicTest.id
-  console.log("veio da filter Item DAta ",testSubtopicDataId)
   let itemDataToIterate = itemData;
-  console.log("veio da filter Item DAta| ItemData ",itemData)
   let sectionFiltereditemData = itemDataToIterate.filter(itemData=> itemData.fields.subTopicLookupId === subTopicTest.id);
-  console.log("veio da filter Item DAta| filteredItemData ",sectionFiltereditemData)
   processItemData(sectionFiltereditemData,subTopicTest);
 }
 function processImageResponse(itemObj){
-  //console.log(itemObj.fields.imageInfo)
   id = itemObj.id
-  //console.log(typeof itemObj.fields.imageInfo)
   if(typeof itemObj.fields.imageInfo ==='undefined'){
-    //console.log(itemData.fields.imageInfo)
     return;
   } else{
-    //console.log(itemObj.fields.imageInfo)
     imageJsonResponse = JSON.parse(itemObj.fields.imageInfo);
     let imageLink = imageJsonResponse.serverUrl + imageJsonResponse.serverRelativeUrl;
     let imageContent = document.createElement('img');
@@ -340,14 +368,6 @@ function processItemText(itemData){
 
 }
 function displaySubTopicInfo(subTopic){
-  // <div class="subTopicDisplayContainer">
-  //       <div class="containerHeader">
-  //         <p class="subTopicTitle">Sub Topic Title</p>
-  //       </div>
-  //       <div class="containerBody">
-  //         <p class="subTopicText">sadsdasdasdasd</p>
-  //       </div>
-  // </div>
   //Locate the main div
   const mainDiv = document.getElementById('main');
   //Clear the main Div
@@ -384,38 +404,5 @@ function displaySubTopicInfo(subTopic){
   containerBody.appendChild(itemText);
   //Adiciona tudo ao main
   mainDiv.appendChild(subTopicDisplayContainer);
-
-  //console.log("Subtópico ID " + subTopic.id + " SubTópico Título: " + subTopic.fields.Title);
-  //mainDiv.appendChild(subTopicTest);
-  //console.log("chamada da função display: ",subTopic)
 }
 
-
-
-
-
-
-
-
-
-//TODO - Parse the JSON response
-// Get the Json Response data
-// Process Json response data
-// Render Json Response data in page
-
-/////// Dom element Manupilation
-// var dropdown = document.getElementsByClassName("dropdown-btn");
-// var i;
-
-//     for (i = 0; i < dropdown.length; i++) {
-//       dropdown[i].addEventListener("click", function() {
-//         this.classList.toggle("active");
-//         var dropdownContent = this.nextElementSibling;
-//         if (dropdownContent.style.display === "flex") {
-//           dropdownContent.style.display = "none";
-//         } else {
-//           dropdownContent.style.display = "flex";
-//           dropdownContent.style.flexDirection = "column";
-//         }
-//       });
-//     }
